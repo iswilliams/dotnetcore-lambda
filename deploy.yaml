@@ -17,6 +17,9 @@ Parameters:
   apiGatewayHTTPMethod:
     Type: String
     Default: POST
+  SGLambdaFunction:
+    Type: String
+    Default: TPE-INIT-LFSG  
   PublicSubnet1ID:
     Type: String
     Default: vpc-devcl-expedicion-PrivateSubnet1AID
