@@ -17,6 +17,12 @@ Parameters:
   apiGatewayHTTPMethod:
     Type: String
     Default: POST
+  PublicSubnet1ID:
+    Type: String
+    Default: vpc-devcl-expedicion-PrivateSubnet1AID
+  PublicSubnet2ID:
+    Type: String
+    Default: vpc-devcl-expedicion-PrivateSubnet2AID  
   lambdaFunctionName:
     Type: String
     AllowedPattern: "[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+"
