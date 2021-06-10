@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: My API Gateway and Lambda function
 Parameters:
+  buildBucketName:
+    Type: String
+    Default: Default-s3-bucket
+  buildObjectKey:
+    Type: String
+    Default: DataConnector.zip
   apiGatewayName:
     Type: String
     Default: TPE-MS-Dataconnector-SG
