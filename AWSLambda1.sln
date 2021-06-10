@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSLambda1", "AWSLambda1\AWSLambda1.csproj", "{CBD04E7A-9A1B-40CF-B157-9A57BA025D27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWSLambda1.Tests", "AWSLambda1.Tests\AWSLambda1.Tests.csproj", "{E642BFDD-F0B8-4273-803C-8D9EEADC37F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBD04E7A-9A1B-40CF-B157-9A57BA025D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD04E7A-9A1B-40CF-B157-9A57BA025D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD04E7A-9A1B-40CF-B157-9A57BA025D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD04E7A-9A1B-40CF-B157-9A57BA025D27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E642BFDD-F0B8-4273-803C-8D9EEADC37F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E642BFDD-F0B8-4273-803C-8D9EEADC37F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E642BFDD-F0B8-4273-803C-8D9EEADC37F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E642BFDD-F0B8-4273-803C-8D9EEADC37F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB025474-ED17-4B41-B2CC-B715C77CB9BA}
+	EndGlobalSection
+EndGlobal
