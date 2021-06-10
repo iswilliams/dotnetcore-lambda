@@ -139,8 +139,7 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Effect: Allow
-                Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaFunctionName}:*
+                Resource: arn:aws:logs:*:*:*
           PolicyName: lambda
     Metadata:
       "AWS::CloudFormation::Designer":
