@@ -1,0 +1,251 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: My API Gateway and Lambda function
+Parameters:
+  apiGatewayName:
+    Type: String
+    Default: TPE-MS-Dataconnector-SG
+  apiGatewayStageName:
+    Type: String
+    AllowedPattern: "[a-z0-9]+"
+    Default: call
+  apiGatewayHTTPMethod:
+    Type: String
+    Default: POST
+  lambdaFunctionName:
+    Type: String
+    AllowedPattern: "[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+"
+    Default: TPE-MS-Dataconnector-SG
+Resources:
+  apiGateway:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Description: Example API Gateway
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Name: !Ref apiGatewayName
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 43ebfea8-75d8-497e-859e-39d0e1858678
+  apiGatewayRootMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      HttpMethod: !Ref apiGatewayHTTPMethod
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
+          - lambdaArn: !GetAtt lambdaFunction.Arn
+      ResourceId: !GetAtt apiGateway.RootResourceId
+      RestApiId: !Ref apiGateway
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 13186eb1-17a8-43c6-9105-227b689a4a68
+  apiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - apiGatewayRootMethod
+    Properties:
+      RestApiId: !Ref apiGateway
+      StageName: !Ref apiGatewayStageName
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 62b5c8f9-9c5c-4fc2-b371-6c7ff3092084
+  lambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: buildBucketName
+        S3Key:
+          Ref: buildObjectKey
+      Description: Example Lambda function
+      TracingConfig:
+        Mode: Active
+      Handler: AWSLambda1::AWSLambda1.Function::FunctionHandler
+      MemorySize: 256
+      Role: !GetAtt lambdaIAMRole.Arn
+      Runtime: dotnetcore3.1
+      VpcConfig:
+        SecurityGroupIds:
+          - "Fn::ImportValue":
+              "Fn::Sub": "${SGLambdaFunction}"
+        SubnetIds:
+          - "Fn::ImportValue":
+              "Fn::Sub": "${PublicSubnet1ID}"
+          - "Fn::ImportValue":
+              "Fn::Sub": "${PublicSubnet2ID}"
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 28f262d9-e366-4f6e-9190-381fc7776543
+  lambdaApiGatewayInvoke:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt lambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub >-
+        arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/${apiGatewayStageName}/${apiGatewayHTTPMethod}/
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 91bbd084-8ea8-40b7-b8c4-4ce615261875
+  lambdaIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Effect: Allow
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaFunctionName}:*
+          PolicyName: lambda
+    Metadata:
+      "AWS::CloudFormation::Designer":
+        id: 590278bd-7ac7-406b-8d4a-81f549586fb1
+Outputs:
+  apiGatewayInvokeURL:
+    Value: !Sub >-
+      https://${apiGateway}.execute-api.${AWS::Region}.amazonaws.com/${apiGatewayStageName}
+  lambdaArn:
+    Value: !GetAtt lambdaFunction.Arn
+Metadata:
+  "AWS::CloudFormation::Designer":
+    702b8881-0b8d-419a-9499-17328d735d75:
+      size:
+        width: 150
+        height: 150
+      position:
+        x: 60
+        "y": 390
+      z: 1
+      embeds: []
+    590278bd-7ac7-406b-8d4a-81f549586fb1:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        "y": 90
+      z: 1
+      embeds: []
+    28f262d9-e366-4f6e-9190-381fc7776543:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        "y": 210
+      z: 1
+      embeds: []
+    91bbd084-8ea8-40b7-b8c4-4ce615261875:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        "y": 330
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 28f262d9-e366-4f6e-9190-381fc7776543
+    43ebfea8-75d8-497e-859e-39d0e1858678:
+      size:
+        width: 330
+        height: 270
+      position:
+        x: 60
+        "y": 90
+      z: 1
+      embeds:
+        - a36d7b49-cf1c-4e74-bbe7-d0321c48808d
+        - 13186eb1-17a8-43c6-9105-227b689a4a68
+        - 62b5c8f9-9c5c-4fc2-b371-6c7ff3092084
+    13186eb1-17a8-43c6-9105-227b689a4a68:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 90
+        "y": 150
+      z: 2
+      parent: 43ebfea8-75d8-497e-859e-39d0e1858678
+      embeds: []
+      isassociatedwith:
+        - a36d7b49-cf1c-4e74-bbe7-d0321c48808d
+      iscontainedinside:
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+    62b5c8f9-9c5c-4fc2-b371-6c7ff3092084:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 210
+        "y": 150
+      z: 2
+      parent: 43ebfea8-75d8-497e-859e-39d0e1858678
+      embeds: []
+      iscontainedinside:
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+      dependson:
+        - 13186eb1-17a8-43c6-9105-227b689a4a68
+    a36d7b49-cf1c-4e74-bbe7-d0321c48808d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 90
+        "y": 260
+      z: 2
+      parent: 43ebfea8-75d8-497e-859e-39d0e1858678
+      embeds: []
+      iscontainedinside:
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
+        - 43ebfea8-75d8-497e-859e-39d0e1858678
