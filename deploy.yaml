@@ -45,6 +45,7 @@ Resources:
   apiGatewayRootMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
+      AuthorizationType: NONE
       HttpMethod: !Ref apiGatewayHTTPMethod
       Integration:
         IntegrationHttpMethod: POST
